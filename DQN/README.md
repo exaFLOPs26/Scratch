@@ -14,3 +14,9 @@ The CartPole task is designed so that the inputs to the agent are 4 real values 
 - 
 
 ![image info](./image/algo_DQN.png)
+
+- Initialize 
+- With probability epsilon select a random action a_t
+    - script/run_deterministic.py line: 75
+- otherwise select a_t = max_{a} Q*(pi(s_t),a ;  theta)
+    - script/run_deterministic.py line: 72
