@@ -13,5 +13,4 @@ The CartPole task is designed so that the inputs to the agent are 4 real values 
 - torch
 - 
 
-
-![alt text](/image/algo_DQN.png "Title")
+![image info](./image/algo_DQN.png)
