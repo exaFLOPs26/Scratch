@@ -1,11 +1,11 @@
 # Replay buffer (which is called Experience Replay in the DQN paper) is a memory that stores transitions that the agent observes, allowing us to reuse this data later.
 # By sampling from it randomly, the transitions that build up a batch are decorrelated. 
 # It has been shown that this greatly stabilizes and improves the DQN training procedure.
-from collections import namedtuple, deque
+from collections import deque
 import math
 import random
+from infrastructure.config import Transition
 
-Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
 
 class ReplayBuffer(object):
     def __init__(self, capacity):
