@@ -1,32 +1,36 @@
 import gymnasium as gym
+from gymnasium.wrappers import RecordVideo
+
 import matplotlib.pyplot as plt
 import torch
 import torch.optim as optim
 from itertools import count
-import os 
+
+import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
-from DQN.network.DQN import DQN
-from DQN.infrastructure.replay_buffer import ReplayBuffer
-from DQN.infrastructure.pytorch_utils import device
-from DQN.infrastructure.utils import optimize_model, plot_durations
-from DQN.infrastructure.config import LR, CAPA, TAU
-from DQN.policy.deterministic import d_policy
+from network.DQN import DQN
+from infrastructure.replay_buffer import ReplayBuffer
+from infrastructure.pytorch_utils import device
+from infrastructure.utils import optimize_model, plot_durations
+from infrastructure.config import LR, CAPA, TAU
+from policy.deterministic import d_policy
 
 def train_dqn():
     
     # Set up environment
-    env = gym.make('CartPole-v1')
-    
+    env = gym.make("CartPole-v1", render_mode="rgb_array")
+    env = RecordVideo(env, video_folder="/videos", episode_trigger=lambda episode_id: True)
+
     # Info about the environment
     n_actions = env.action_space.n
     state, info = env.reset()
     n_observations = len(state)
 
     # Initialize networks, optimizer, and replay buffer
-    Q_net = DQN(n_actions).to(device)
-    target_net = DQN(n_actions).to(device)
+    Q_net = DQN(n_observations, n_actions).to(device)
+    target_net = DQN(n_observations, n_actions).to(device)
     
     target_net.load_state_dict(Q_net.state_dict())
     
