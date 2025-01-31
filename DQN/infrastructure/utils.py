@@ -1,44 +1,34 @@
 from infrastructure.config import BATCH_SIZE, GAMMA, EPS_START, EPS_END, EPS_DECAY, TAU, LR, CAPA, Transition, MAX_NORM
 from infrastructure.pytorch_utils import device
 import torch
-import torch.nn as nn
+import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import matplotlib
 
 
-def optimize_model(memory, Q_net, optimizer):
+def optimize_model(memory, Q_net, target_net, optimizer):
     if len(memory) < BATCH_SIZE:
         return
-    transition = memory.sample(BATCH_SIZE)
-    batch = Transition(*zip(*transition))
     
-    non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, 
-                                            batch.next_state)), device = device, dtype = torch.bool)
+    transitions = memory.sample(BATCH_SIZE)
+    batch = Transition(*zip(*transitions))
+
+    non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, batch.next_state)), device=device, dtype=torch.bool)
     non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
-    
     state_batch = torch.cat(batch.state)
     action_batch = torch.cat(batch.action)
     reward_batch = torch.cat(batch.reward)
-    
-    Q_values = Q_net(state_batch).gather(1, action_batch)
-    
-    # Computing Value functions for all next state s_{t+1}
-    next_state_values = torch.zeros(BATCH_SIZE, device = device)
-    with torch.no_grad():
-        next_state_values[non_final_mask] = Q_net(non_final_next_states).max(1).values
-        
-    # Compute the expected Q values
-    expected_Q_values = (next_state_values * GAMMA) + reward_batch
-    
-    # Compute Huber loss
-    cirterion = nn.SmoothL1Loss()
-    loss = cirterion(Q_values, expected_Q_values.unsqueeze(1))
-    
-    # Optimize the model
+
+    state_action_values = Q_net(state_batch).gather(1, action_batch)
+
+    next_state_values = torch.zeros(BATCH_SIZE, device=device)
+    next_state_values[non_final_mask] = target_net(non_final_next_states).max(1)[0].detach()
+    expected_state_action_values = (next_state_values * GAMMA) + reward_batch
+
+    loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+
     optimizer.zero_grad()
     loss.backward()
-    
-    torch.nn.utils.clip_grad_norm_(Q_net.parameters(), MAX_NORM)
     optimizer.step()
     
 

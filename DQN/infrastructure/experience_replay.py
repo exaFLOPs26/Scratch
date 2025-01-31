@@ -3,11 +3,11 @@
 # It has been shown that this greatly stabilizes and improves the DQN training procedure.
 from collections import deque
 import random
-from infrastructure.config import Transition
-from infrastructure.config import CAPA
+from infrastructure.config import Transition, CAPA
 
 
-class ReplayBuffer(object):
+
+class experience_replay(object):
     def __init__(self):
         self.memory = deque([], maxlen = CAPA)
         

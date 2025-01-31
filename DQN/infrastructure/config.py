@@ -13,12 +13,12 @@ from collections import namedtuple
 
 BATCH_SIZE = 128
 GAMMA = 0.99
-EPS_START = 0.9
+EPS_START = 0.2
 EPS_END = 0.05
-EPS_DECAY = 1000
+EPS_DECAY = 100
 TAU = 0.005
 LR = 1e-4
 CAPA = 10000
-MAX_NORM = 100
+MAX_NORM = 10
 
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))

@@ -1,81 +1,77 @@
-import gymnasium as gym
-from gymnasium.wrappers import RecordVideo
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-import matplotlib.pyplot as plt
 import torch
 import torch.optim as optim
 from itertools import count
+from infrastructure.experience_replay import experience_replay
+from model.DQN import QNetwork
+from policy.epsilon_greedy_policy import epsilon_greedy_policy
+from infrastructure.utils import optimize_model
+from infrastructure.config import GAMMA, EPS_START, EPS_END, EPS_DECAY, TAU, LR, BATCH_SIZE
+import gymnasium as gym
 
-import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+import matplotlib.pyplot as plt
+from gymnasium.wrappers import RecordVideo
 
-from network.DQN import DQN
-from infrastructure.replay_buffer import ReplayBuffer
-from infrastructure.pytorch_utils import device
-from infrastructure.utils import optimize_model, plot_durations
-from infrastructure.config import LR, CAPA, TAU
-from policy.deterministic import d_policy
+# Initialize environment, networks, optimizer, and replay buffer
+env = gym.make("CartPole-v1", render_mode="rgb_array")   # Initialize your environment here
+n_obs = env.observation_space.shape[0]
+n_act = env.action_space.n
 
-def train_dqn():
-    
-    # Set up environment
-    env = gym.make("CartPole-v1", render_mode="rgb_array")
-    env = RecordVideo(env, video_folder="DQN/video", episode_trigger=lambda episode_id: True)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+Q_net = QNetwork(n_obs, n_act).to(device)
+target_net = QNetwork(n_obs, n_act).to(device)
+target_net.load_state_dict(Q_net.state_dict())
+target_net.eval()
+optimizer = optim.Adam(Q_net.parameters(), lr=LR)
+memory = experience_replay()
 
-    # Info about the environment
-    n_actions = env.action_space.n
+steps_done = 0
+epsilon_durations = []
+num_episodes = 600 if torch.cuda.is_available() else 500
+episode_rewards = []
+
+print(f"Using {'GPU' if torch.cuda.is_available() else 'CPU'}")
+
+env = RecordVideo(env, video_folder="video", episode_trigger=lambda episode_id: episode_id % 100 == 0)
+
+for i_episode in range(num_episodes):
     state, info = env.reset()
-    n_observations = len(state)
-
-    # Initialize networks, optimizer, and replay buffer
-    Q_net = DQN(n_observations, n_actions).to(device)
-    target_net = DQN(n_observations, n_actions).to(device)
+    state = torch.tensor(state, device=device, dtype=torch.float).unsqueeze(0)
+    episode_reward = 0
     
-    target_net.load_state_dict(Q_net.state_dict())
-    
-    optimizer = optim.AdamW(Q_net.parameters(), lr=LR, amsgrad=True)
-    memory = ReplayBuffer()
-    
-    steps_done = 0
-    epsilon_durations = []
-    num_episodes = 600 if torch.cuda.is_available() else 50
-    
-    print(f"Using {'GPU' if torch.cuda.is_available() else 'CPU'}")
-
-    for i_episode in range(num_episodes):
-        state, info = env.reset()
-        state = torch.tensor(state, device=device, dtype=torch.float).unsqueeze(0)
+    for t in count():
+        action = epsilon_greedy_policy(state, Q_net, steps_done,env)
+        observations, reward, terminated, truncated, _ = env.step(action.item())
+        reward = torch.tensor([reward], device=device)
+        episode_reward += reward.item()
+        done = terminated or truncated
         
-        for t in count():
-            action = d_policy(state, Q_net, env)
-            observations, reward, terminated, truncated, _ = env.step(action.item())
-            reward = torch.tensor([reward], device=device)
-            done = terminated or truncated
-            
-            next_state = None if terminated else torch.tensor(observations, device=device, dtype=torch.float).unsqueeze(0)
-            
-            memory.push(state, action, next_state, reward)
-            state = next_state
-            optimize_model(memory, Q_net, optimizer)
-            
-            # Soft update the target network
-            target_net_state_dict = target_net.state_dict()
-            Q_net_state_dict = Q_net.state_dict()
-            for key in Q_net_state_dict:
-                target_net_state_dict[key] = (1 - TAU) * target_net_state_dict[key] + TAU * Q_net_state_dict[key]
-            target_net.load_state_dict(target_net_state_dict)
-            
-            if done:
-                epsilon_durations.append(t + 1)
-                plot_durations(epsilon_durations)
-                break
-    
-    print("Training complete")
-    plot_durations(show_result=True, epsilon_durations=epsilon_durations)
-    plt.ioff()
-    plt.show()
-    env.close()
+        next_state = None if terminated else torch.tensor(observations, device=device, dtype=torch.float).unsqueeze(0)
+        
+        memory.push(state, action, next_state, reward)
+        state = next_state
+        optimize_model(memory, Q_net, target_net, optimizer)
+        
+        # Soft update the target network
+        target_net_state_dict = target_net.state_dict()
+        Q_net_state_dict = Q_net.state_dict()
+        for key in Q_net_state_dict:
+            target_net_state_dict[key] = (1 - TAU) * target_net_state_dict[key] + TAU * Q_net_state_dict[key]
+        target_net.load_state_dict(target_net_state_dict)
+        
+        if done:
+            episode_rewards.append(episode_reward)
+            break
+        
+# Save the plot of rewards
+plt.figure()
+plt.plot(episode_rewards)
+plt.xlabel('Episode')
+plt.ylabel('Reward')
+plt.title('Episode Rewards over Time')
+plt.savefig('episode_rewards.png')
 
-if __name__ == "__main__":
-    train_dqn()
+env.close()
