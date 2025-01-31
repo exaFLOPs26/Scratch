@@ -2,14 +2,14 @@
 # By sampling from it randomly, the transitions that build up a batch are decorrelated. 
 # It has been shown that this greatly stabilizes and improves the DQN training procedure.
 from collections import deque
-import math
 import random
 from infrastructure.config import Transition
+from infrastructure.config import CAPA
 
 
 class ReplayBuffer(object):
-    def __init__(self, capacity):
-        self.memory = deque([], maxlen = capacity)
+    def __init__(self):
+        self.memory = deque([], maxlen = CAPA)
         
     def push(self, *args):
         # Save a transition

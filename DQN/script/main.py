@@ -35,11 +35,11 @@ def train_dqn():
     target_net.load_state_dict(Q_net.state_dict())
     
     optimizer = optim.AdamW(Q_net.parameters(), lr=LR, amsgrad=True)
-    memory = ReplayBuffer(capacity=CAPA)
+    memory = ReplayBuffer()
     
     steps_done = 0
     epsilon_durations = []
-    num_episodes = 600 if torch.cuda.is_available() else 600
+    num_episodes = 600 if torch.cuda.is_available() else 50
     
     print(f"Using {'GPU' if torch.cuda.is_available() else 'CPU'}")
 
