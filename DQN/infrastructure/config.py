@@ -9,6 +9,7 @@ from collections import namedtuple
 # TAU is the update rate of the target network
 # LR is the learning rate of the ``AdamW`` optimizer
 # CAPA is Replay buffer capacity
+# MAX_NORM is the maximum norm of the gradients
 
 BATCH_SIZE = 128
 GAMMA = 0.99
@@ -17,14 +18,7 @@ EPS_END = 0.05
 EPS_DECAY = 1000
 TAU = 0.005
 LR = 1e-4
-CAPA = 10000 
-env = gym.make('CartPole-v1')
-
-# Get number of actions from gym action space
-n_actions = env.action_space.n
-
-# Get the number of state observations
-state, info = env.reset()
-n_observations = len(CAPA)
+CAPA = 10000
+MAX_NORM = 100
 
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
