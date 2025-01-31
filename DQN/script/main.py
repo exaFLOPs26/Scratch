@@ -30,7 +30,7 @@ memory = experience_replay()
 
 steps_done = 0
 epsilon_durations = []
-num_episodes = 600 if torch.cuda.is_available() else 500
+num_episodes = 5000 if torch.cuda.is_available() else 1000
 episode_rewards = []
 
 print(f"Using {'GPU' if torch.cuda.is_available() else 'CPU'}")
@@ -44,12 +44,13 @@ for i_episode in range(num_episodes):
     
     for t in count():
         action = epsilon_greedy_policy(state, Q_net, steps_done,env)
+        
         observations, reward, terminated, truncated, _ = env.step(action.item())
-        reward = torch.tensor([reward], device=device)
-        episode_reward += reward.item()
-        done = terminated or truncated
         
         next_state = None if terminated else torch.tensor(observations, device=device, dtype=torch.float).unsqueeze(0)
+                
+        reward = torch.tensor([reward], device=device)
+        episode_reward += reward.item()
         
         memory.push(state, action, next_state, reward)
         state = next_state
@@ -62,6 +63,8 @@ for i_episode in range(num_episodes):
             target_net_state_dict[key] = (1 - TAU) * target_net_state_dict[key] + TAU * Q_net_state_dict[key]
         target_net.load_state_dict(target_net_state_dict)
         
+        done = terminated or truncated
+        
         if done:
             episode_rewards.append(episode_reward)
             break
@@ -72,6 +75,6 @@ plt.plot(episode_rewards)
 plt.xlabel('Episode')
 plt.ylabel('Reward')
 plt.title('Episode Rewards over Time')
-plt.savefig('episode_rewards.png')
+plt.savefig('video/episode_rewards.png')
 
 env.close()

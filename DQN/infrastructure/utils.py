@@ -2,9 +2,6 @@ from infrastructure.config import BATCH_SIZE, GAMMA, EPS_START, EPS_END, EPS_DEC
 from infrastructure.pytorch_utils import device
 import torch
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
-import matplotlib
-
 
 def optimize_model(memory, Q_net, target_net, optimizer):
     if len(memory) < BATCH_SIZE:
@@ -30,39 +27,3 @@ def optimize_model(memory, Q_net, target_net, optimizer):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    
-
-def plot_durations(show_result = False, epsilon_durations=[]):
-    # Set up matplotlib
-    is_iptyhon = 'inline' in matplotlib.get_backend()
-    if is_iptyhon:
-        from IPython import display
-
-    plt.ion()
-    plt.figure(1)
-    
-    duration_t = torch.tensor(epsilon_durations, dtype=torch.float)
-    
-    if show_result:
-        plt.title("Result")
-    else:
-        plt.clf()
-        plt.title("Training...")
-    plt.xlabel("Episode")
-    plt.ylabel("Duration")
-    plt.plot(duration_t.numpy())
-    
-    if len(duration_t) >= 100:
-        means = duration_t.unfold(0, 100, 1).mean(1).view(-1)
-        means = torch.cat((torch.zeros(99), means))
-        plt.plot(means.numpy())
-        
-    plt.pause(0.001) # pause a bit so that plots are updated
-    
-    if is_iptyhon:
-        if not show_result:
-            display.display(plt.gcf())
-            display.clear_output(wait=True)
-        else:
-            display.display(plt.gcf())
-    

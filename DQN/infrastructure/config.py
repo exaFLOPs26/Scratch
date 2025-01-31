@@ -13,8 +13,8 @@ from collections import namedtuple
 
 BATCH_SIZE = 128
 GAMMA = 0.99
-EPS_START = 0.2
-EPS_END = 0.05
+EPS_START = 0.1
+EPS_END = 0.005
 EPS_DECAY = 100
 TAU = 0.005
 LR = 1e-4

@@ -12,4 +12,3 @@ def epsilon_greedy_policy(state, Q_net, steps_done, env):
             return Q_net(state).max(1)[1].view(1, 1)
     else:
         return torch.tensor([[random.randrange(env.action_space.n)]], device=state.device, dtype=torch.long)
-   
