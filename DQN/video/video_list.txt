@@ -1,6 +1,0 @@
-file '/Users/denny/Documents/denny_file/RLLAB/Scratch/DQN/video/rl-video-episode-0.mp4'
-file '/Users/denny/Documents/denny_file/RLLAB/Scratch/DQN/video/rl-video-episode-100.mp4'
-file '/Users/denny/Documents/denny_file/RLLAB/Scratch/DQN/video/rl-video-episode-200.mp4'
-file '/Users/denny/Documents/denny_file/RLLAB/Scratch/DQN/video/rl-video-episode-300.mp4'
-file '/Users/denny/Documents/denny_file/RLLAB/Scratch/DQN/video/rl-video-episode-400.mp4'
-
