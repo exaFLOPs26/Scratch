@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-from DQN.network import DQN
+from DQN.network.DQN import DQN
 from DQN.infrastructure.replay_buffer import ReplayBuffer
 from DQN.infrastructure.pytorch_utils import device
 from DQN.infrastructure.utils import optimize_model, plot_durations
