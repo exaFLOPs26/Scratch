@@ -44,7 +44,7 @@ cd DQN
     - DQN/script/main.py | line 48 : interaction with environment
 
 - "Set s_{t+1} = s_t, a_t,x_{t+1} and preprocess ~"
-    - DQN/script/main.py | line 50 : Get next state (model-based)
+    - DQN/script/main.py | line 50 : Get next state directly by environment (model-free)
 
 - "Store transition (pi_t, a_t, r_t, pi_{t+1}) in memory"
     - DQN/script/main.py | line 55 : Store transition tuple to memory
