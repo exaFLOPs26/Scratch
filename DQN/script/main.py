@@ -21,7 +21,7 @@ def train_dqn():
     
     # Set up environment
     env = gym.make("CartPole-v1", render_mode="rgb_array")
-    env = RecordVideo(env, video_folder="/videos", episode_trigger=lambda episode_id: True)
+    env = RecordVideo(env, video_folder="DQN/video", episode_trigger=lambda episode_id: True)
 
     # Info about the environment
     n_actions = env.action_space.n
