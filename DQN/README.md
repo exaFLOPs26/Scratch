@@ -16,7 +16,6 @@ cd DQN
 
 `python video/video_list.py `
 
-`ffmpeg -f concat -safe 0 -i DQN/video/video_list.txt -c copy DQN/video/video.mp4`
 
 # Algorithm
 ![image info](./image/algo_DQN.png)
