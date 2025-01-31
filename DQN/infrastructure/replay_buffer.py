@@ -4,7 +4,7 @@
 from collections import deque
 import math
 import random
-from infrastructure.config import Transition
+from DQN.infrastructure.config import Transition
 
 
 class ReplayBuffer(object):

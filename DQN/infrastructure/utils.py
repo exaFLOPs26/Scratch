@@ -1,5 +1,5 @@
-from infrastructure.config import BATCH_SIZE, GAMMA, EPS_START, EPS_END, EPS_DECAY, TAU, LR, CAPA, Transition, MAX_NORM
-from infrastructure.pytorch_utils import device
+from DQN.infrastructure.config import BATCH_SIZE, GAMMA, EPS_START, EPS_END, EPS_DECAY, TAU, LR, CAPA, Transition, MAX_NORM
+from DQN.infrastructure.pytorch_utils import device
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt

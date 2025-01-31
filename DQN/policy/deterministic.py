@@ -12,7 +12,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 from DQN.infrastructure.pytorch_utils import device
-from infrastructure.config import EPS_START, EPS_END, EPS_DECAY
+from DQN.infrastructure.config import EPS_START, EPS_END, EPS_DECAY
 
 steps_done = 0
 
