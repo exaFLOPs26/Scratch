@@ -17,7 +17,7 @@ from infrastructure.config import EPS_START, EPS_END, EPS_DECAY
 steps_done = 0
 
 # As mentioned by the name of this file, we will be implementing a deterministic policy.
-def d_policy(state, Q_net): 
+def d_policy(state, Q_net, env): 
     global steps_done
     sample = random.random()
     eps_threshold = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * steps_done / EPS_DECAY)
@@ -30,5 +30,5 @@ def d_policy(state, Q_net):
     
     # Select a random action ~ exploration (epsilon-greedy)
     else: 
-        return torch.tensor([[random.randrange(n_actions)], device=device, dtype=torch.long])
+        return torch.tensor([[env.action_space.sample()]], device=device, dtype=torch.long)
    

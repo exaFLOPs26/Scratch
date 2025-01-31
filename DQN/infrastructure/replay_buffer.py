@@ -9,7 +9,7 @@ from infrastructure.config import Transition
 
 class ReplayBuffer(object):
     def __init__(self, capacity):
-        self.memory = deque([], maxlen = capacity))
+        self.memory = deque([], maxlen = capacity)
         
     def push(self, *args):
         # Save a transition

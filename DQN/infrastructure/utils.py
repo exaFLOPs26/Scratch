@@ -42,7 +42,7 @@ def optimize_model(memory, Q_net, optimizer):
     optimizer.step()
     
 
-def plot_durations(show_result = False, epsilon_durations):
+def plot_durations(show_result = False, epsilon_durations=[]):
     # Set up matplotlib
     is_iptyhon = 'inline' in matplotlib.get_backend()
     if is_iptyhon:

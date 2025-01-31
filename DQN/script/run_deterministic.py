@@ -12,11 +12,12 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-from DQN.network.DQN import DQN
+from DQN.network import DQN
 from DQN.infrastructure.replay_buffer import ReplayBuffer
-from DQN.infrastructure.pytorch_utils import device, optimize_model, plot_durations
-from infrastructure.config import LR, CAPA, TAU
-from policy.deterministic import d_policy
+from DQN.infrastructure.pytorch_utils import device
+from DQN.infrastructure.utils import optimize_model, plot_durations
+from DQN.infrastructure.config import LR, CAPA, TAU
+from DQN.policy.deterministic import d_policy
 
 
 # Set up environment
@@ -54,7 +55,7 @@ for i_episode in range(num_episodes):
     state, info = env.reset()
     state = torch.tensor(state, device=device, dtype=torch.float).unsqueeze(0)
     for t in count():
-        action = d_policy(state, Q_net)
+        action = d_policy(state, Q_net, env)
         observations, reward, terminated, truncated, _ = env.step(action.item())
         reward = torch.tensor([reward], device=device)
         done = terminated or truncated
