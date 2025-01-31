@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import torch
 import torch.optim as optim
 from itertools import count
+import os 
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 from DQN.network.DQN import DQN
 from DQN.infrastructure.replay_buffer import ReplayBuffer
@@ -22,8 +25,8 @@ def train_dqn():
     n_observations = len(state)
 
     # Initialize networks, optimizer, and replay buffer
-    Q_net = DQN(n_observations, n_actions).to(device)
-    target_net = DQN(n_observations, n_actions).to(device)
+    Q_net = DQN(n_actions).to(device)
+    target_net = DQN(n_actions).to(device)
     
     target_net.load_state_dict(Q_net.state_dict())
     
