@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from gymnasium.wrappers import RecordVideo
 
 # Initialize environment, networks, optimizer, and replay buffer
-env = gym.make("CartPole-v1", render_mode="rgb_array")   # Initialize your environment here
+env = gym.make("MountainCar-v0", render_mode="rgb_array")   # Initialize your environment here
 n_obs = env.observation_space.shape[0]
 n_act = env.action_space.n
 
@@ -54,7 +54,7 @@ for i_episode in range(num_episodes):
         
         memory.push(state, action, next_state, reward)
         state = next_state
-        optimize_model(memory, Q_net, target_net, optimizer)
+        optimize_model(memory, Q_net, target_net, optimizer, device)
         
         # Soft update the target network
         target_net_state_dict = target_net.state_dict()

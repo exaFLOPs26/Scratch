@@ -11,14 +11,14 @@ from collections import namedtuple
 # CAPA is Replay buffer capacity
 # MAX_NORM is the maximum norm of the gradients
 
-BATCH_SIZE = 128
+BATCH_SIZE = 256
 GAMMA = 0.99
-EPS_START = 0.1
+EPS_START = 0.5
 EPS_END = 0.005
 EPS_DECAY = 100
 TAU = 0.005
 LR = 1e-4
 CAPA = 10000
-MAX_NORM = 10
+MAX_NORM = 50
 
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))

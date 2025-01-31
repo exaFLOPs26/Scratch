@@ -3,7 +3,7 @@ from infrastructure.pytorch_utils import device
 import torch
 import torch.nn.functional as F
 
-def optimize_model(memory, Q_net, target_net, optimizer):
+def optimize_model(memory, Q_net, target_net, optimizer, device):
     if len(memory) < BATCH_SIZE:
         return
     
@@ -11,10 +11,10 @@ def optimize_model(memory, Q_net, target_net, optimizer):
     batch = Transition(*zip(*transitions))
 
     non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, batch.next_state)), device=device, dtype=torch.bool)
-    non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
-    state_batch = torch.cat(batch.state)
-    action_batch = torch.cat(batch.action)
-    reward_batch = torch.cat(batch.reward)
+    non_final_next_states = torch.cat([s for s in batch.next_state if s is not None]).to(device)
+    state_batch = torch.cat(batch.state).to(device)
+    action_batch = torch.cat(batch.action).to(device)
+    reward_batch = torch.cat(batch.reward).to(device)
 
     state_action_values = Q_net(state_batch).gather(1, action_batch)
 
