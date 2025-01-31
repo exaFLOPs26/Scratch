@@ -39,7 +39,7 @@ def train_dqn():
     
     steps_done = 0
     epsilon_durations = []
-    num_episodes = 600 if torch.cuda.is_available() else 50
+    num_episodes = 600 if torch.cuda.is_available() else 600
     
     print(f"Using {'GPU' if torch.cuda.is_available() else 'CPU'}")
 
