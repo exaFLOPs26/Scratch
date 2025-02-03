@@ -56,7 +56,7 @@ for i_episode in range(num_episodes):
         state = next_state
         optimize_model(memory, Q_net, target_net, optimizer, device)
         
-        # Soft update the target network
+        # Soft update the target network (Idea from DDPG)
         target_net_state_dict = target_net.state_dict()
         Q_net_state_dict = Q_net.state_dict()
         for key in Q_net_state_dict:
