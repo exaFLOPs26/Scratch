@@ -9,7 +9,7 @@ from infrastructure.replay_buffer import replay_buffer
 from model.DDPG import QNetwork
 from policy.action_net import actorNetwork, noise
 from infrastructure.utils import optimize_model
-from infrastructure.config import GAMMA, EPS_START, EPS_END, EPS_DECAY, TAU, LR_actor, LR_critic, BATCH_SIZE, NOISE_FACTOR
+from infrastructure.config import N_iter_CPU, N_iter_GPU, LR_actor, LR_critic, NOISE_FACTOR
 from infrastructure.pytorch_utils import init_gpu
 import gymnasium as gym
 import matplotlib.pyplot as plt
@@ -47,10 +47,10 @@ memory = replay_buffer()
 
 steps_done = 0
 epsilon_durations = []
-num_episodes = 5000 if torch.cuda.is_available() else 1000
+num_episodes = N_iter_GPU if torch.cuda.is_available() else N_iter_CPU
 episode_rewards = []
 
-env = RecordVideo(env, video_folder="video", episode_trigger=lambda episode_id: episode_id % 100 == 0)
+env = RecordVideo(env, video_folder="video", episode_trigger=lambda episode_id: episode_id % 10 == 0)
 
 for i_episode in range(num_episodes):
 
