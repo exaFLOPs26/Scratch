@@ -17,7 +17,7 @@ from gymnasium.wrappers import RecordVideo
 
 # Initialize environment
 try:
-    env = gym.make("HalfCheetah-v4", render_mode="rgb_array")  
+    env = gym.make("HalfCheetah-v5", render_mode="rgb_array")  
 except Exception as e:
     print(f"Error initializing environment: {e}")
     sys.exit(1)
