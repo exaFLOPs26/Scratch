@@ -2,7 +2,7 @@ import gymnasium as gym
 from collections import namedtuple
 
 # BATCH_SIZE is the number of transitions sampled from the replay buffer
-# GAMMA is the discount factor 
+# GAMMA is the discount factor
 # EPS_START is the starting value of epsilon
 # EPS_END is the final value of epsilon
 # EPS_DECAY controls the rate of exponential decay of epsilon, higher means a slower decay
@@ -23,9 +23,9 @@ LR_actor = 1e-4
 LR_critic = 1e-4
 CAPA = 10000
 MAX_NORM = 50
-NOISE_FACTOR = 1 
+NOISE_FACTOR = 1
 N_iter_GPU = 1000
 N_iter_CPU = 100
 
 
-Transition = namedtuple('Transition', ('state', 'action', 'reward','next_state'))
+Transition = namedtuple("Transition", ("state", "action", "reward", "next_state"))

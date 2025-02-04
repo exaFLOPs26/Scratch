@@ -21,4 +21,4 @@ LR = 1e-4
 CAPA = 10000
 MAX_NORM = 50
 
-Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
+Transition = namedtuple("Transition", ("state", "action", "next_state", "reward"))

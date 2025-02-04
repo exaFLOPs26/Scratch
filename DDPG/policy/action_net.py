@@ -3,8 +3,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 def noise(n_act, noise_factor):
     return torch.randn(n_act) * noise_factor
+
 
 class actorNetwork(nn.Module):
     def __init__(self, state_size, action_size):
