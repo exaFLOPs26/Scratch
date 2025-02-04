@@ -6,7 +6,7 @@ import torch
 import torch.optim as optim
 from itertools import count
 from infrastructure.experience_replay import experience_replay
-from model.DQN import simple_QNetwork as QNetwork
+from model.DQN import QNetwork
 from policy.epsilon_greedy_policy import epsilon_greedy_policy
 from infrastructure.utils import optimize_model
 from infrastructure.config import (
@@ -19,12 +19,15 @@ from infrastructure.config import (
     BATCH_SIZE,
 )
 import gymnasium as gym
+
 import numpy as np
 import matplotlib.pyplot as plt
-from gymnasium.wrappers import RecordVideo
+from gymnasium.wrappers import RecordVideo, AtariPreprocessing
+from gymnasium.wrappers import FrameStackObservation as FrameStack
 
 # Function to run the experiment with a given seed
 def run_experiment(seed):
+    print(gym.envs.registry.keys())
     # Set random seeds
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -32,13 +35,15 @@ def run_experiment(seed):
         torch.cuda.manual_seed(seed)
 
     # Initialize environment, networks, optimizer, and replay buffer
-    env = gym.make("MountainCar-v0", render_mode="rgb_array")  # Initialize your environment here
-    n_obs = env.observation_space.shape[0]
+    env = gym.make("BreakoutNoFrameskip-v4")  
+    env = AtariPreprocessing(env)
+    env = FrameStack(env, 4)  # Stack 4 frames
+
     n_act = env.action_space.n
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    Q_net = QNetwork(n_obs, n_act).to(device)
-    target_net = QNetwork(n_obs, n_act).to(device)
+    Q_net = QNetwork(n_act).to(device)
+    target_net = QNetwork(n_act).to(device)
     target_net.load_state_dict(Q_net.state_dict())
     target_net.eval()
     optimizer = optim.Adam(Q_net.parameters(), lr=LR)
@@ -92,6 +97,6 @@ def run_experiment(seed):
     env.close()
 
 # Run experiments with multiple seeds
-seeds = [42, 100, 2]  # List of seeds to use
+seeds = [0, 1, 2]  # List of seeds to use
 for seed in seeds:
     run_experiment(seed)
