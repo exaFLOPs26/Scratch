@@ -29,10 +29,12 @@ def optimize_model(
     non_final_next_states = torch.cat(
         [s for s in batch.next_state if s is not None]
     ).to(device, dtype=torch.float32)
-    state_batch = torch.cat(batch.state).to(device, dtype=torch.float32)
-    action_batch = torch.cat(
-        [torch.tensor(a, device=device, dtype=torch.float32) for a in batch.action]
-    ).to(device, dtype=torch.float32)
+    
+    state_batch = torch.stack(batch.state).to(device, dtype=torch.float32)
+    # action_batch = torch.cat(
+    #     [torch.tensor(a, device=device, dtype=torch.float32) for a in batch.action]
+    # ).to(device, dtype=torch.float32)
+    action_batch = torch.stack(batch.action).to(device, dtype=torch.float32)
     reward_batch = torch.cat(batch.reward).to(device, dtype=torch.float32)
 
     # Compute the target Q value
@@ -41,7 +43,7 @@ def optimize_model(
     next_state_values[non_final_mask] = target_critic_net(
         non_final_next_states, next_actions
     ).squeeze()
-    expected_state_action_values = reward_batch + GAMMA * next_state_values
+    expected_state_action_values = (reward_batch + GAMMA * next_state_values).detach()
 
     # Compute the current Q value
     state_action_values = critic_net(state_batch, action_batch).squeeze()
@@ -60,13 +62,9 @@ def optimize_model(
     policy_loss.backward()
     actor_optimizer.step()
 
-    # Soft update the target networks
-    for target_param, param in zip(
-        target_actor_net.parameters(), actor_net.parameters()
-    ):
-        target_param.data.copy_(TAU * param.data + (1.0 - TAU) * target_param.data)
-
-    for target_param, param in zip(
-        target_critic_net.parameters(), critic_net.parameters()
-    ):
-        target_param.data.copy_(TAU * param.data + (1.0 - TAU) * target_param.data)
+    # Soft update target networks
+    with torch.no_grad():
+        for target_param, param in zip(target_actor_net.parameters(), actor_net.parameters()):
+            target_param.data.copy_(TAU * param.data + (1.0 - TAU) * target_param.data)
+        for target_param, param in zip(target_critic_net.parameters(), critic_net.parameters()):
+            target_param.data.copy_(TAU * param.data + (1.0 - TAU) * target_param.data)
